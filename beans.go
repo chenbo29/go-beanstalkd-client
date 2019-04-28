@@ -3,8 +3,8 @@ package beans
 import (
 	"fmt"
 	"github.com/beanstalkd/go-beanstalk"
-	"go-beanstalkd-client/config"
-	"go-beanstalkd-client/connect"
+	"github.com/chenbo29/go-beanstalkd-client/config"
+	"github.com/chenbo29/go-beanstalkd-client/connect"
 	"os"
 )
 
@@ -12,7 +12,7 @@ var con *beanstalk.Conn
 var bsdParamsData *config.ParamsData
 var separatorLength = 50
 
-func Run()  {
+func Run() {
 	bsdParamsData = config.GetParams()
 	con = connect.Con(bsdParamsData)
 	if len(os.Args) > 1 {
@@ -30,7 +30,7 @@ func Run()  {
 	return
 }
 
-func Status()  {
+func Status() {
 	status, _ := con.Stats()
 	for key, value := range status {
 		fmt.Println(key + GetSeparator(len(key), separatorLength) + value)
@@ -38,12 +38,12 @@ func Status()  {
 	fmt.Println(*bsdParamsData)
 }
 
-func Start()  {
+func Start() {
 	fmt.Println("Start to do something")
 	fmt.Println(*bsdParamsData)
 }
 
-func Stop()  {
+func Stop() {
 	fmt.Println("Stop Beanstalkd")
 	fmt.Println(*bsdParamsData)
 }
@@ -51,7 +51,7 @@ func Stop()  {
 func GetSeparator(x int, y int) string {
 	num := y - x
 	separator := " "
-	for i:=0; i<num; i++ {
+	for i := 0; i < num; i++ {
 		separator += "-"
 	}
 	separator += " "
