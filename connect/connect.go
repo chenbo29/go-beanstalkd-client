@@ -5,10 +5,12 @@ import (
 	"github.com/chenbo29/go-beanstalkd-client/config"
 )
 
-func Con(params *config.ParamsData) *beanstalk.Conn {
-	con, err := beanstalk.Dial("tcp", params.Host+":"+params.Port)
+var beanstalkConn *beanstalk.Conn
+
+func Conn(params *config.ParamsData) *beanstalk.Conn {
+	beanstalkConn, err := beanstalk.Dial("tcp", params.Host+":"+params.Port)
 	if err != nil {
 		panic(err)
 	}
-	return con
+	return beanstalkConn
 }

@@ -13,7 +13,8 @@ var port string
 type ParamsData struct {
 	Host string
 	Port string
-	Num uint64
+	Num  uint64
+	Tube string
 }
 
 var returnParams ParamsData
@@ -24,7 +25,7 @@ var ErrHelp = errors.New("flag: help requested")
 func init() {
 	returnParams.Host = "127.0.0.1"
 	returnParams.Port = "11300"
-	if len(os.Args) > 1{
+	if len(os.Args) > 1 {
 		CommandLine = flag.NewFlagSet(os.Args[1], 0)
 		CommandLine.Usage = func() {
 			fmt.Fprintf(os.Stderr, "go-beanstalkd created by chenbotome@163.com \n Usage of %s:\n", os.Args[0])
@@ -44,7 +45,8 @@ func GetParams() *ParamsData {
 			CommandLine.Uint64Var(&returnParams.Num, "num", 2, "the host of beanstalkd (shorthand)")
 			CommandLine.Parse(os.Args[2:])
 		case "status":
-			CommandLine.Uint64Var(&returnParams.Num, "num", 2, "the host of beanstalkd (shorthand)")
+			CommandLine.StringVar(&returnParams.Tube, "tube", "default", "the status of tube")
+			CommandLine.StringVar(&returnParams.Tube, "t", "default", "the status of tube (shorthand)")
 			CommandLine.Parse(os.Args[2:])
 		}
 	}
