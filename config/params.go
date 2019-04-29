@@ -11,10 +11,11 @@ var host string
 var port string
 
 type ParamsData struct {
-	Host string
-	Port string
-	Num  uint64
-	Tube string
+	Host        string
+	Port        string
+	Num         uint64
+	Tube        string
+	IsAllStatus bool
 }
 
 var returnParams ParamsData
@@ -47,6 +48,8 @@ func GetParams() *ParamsData {
 		case "status":
 			CommandLine.StringVar(&returnParams.Tube, "tube", "default", "the status of tube")
 			CommandLine.StringVar(&returnParams.Tube, "t", "default", "the status of tube (shorthand)")
+			CommandLine.BoolVar(&returnParams.IsAllStatus, "all", false, "the status of beanstalk")
+			CommandLine.BoolVar(&returnParams.IsAllStatus, "a", false, "the status of beanstalk (shorthand)")
 			CommandLine.Parse(os.Args[2:])
 		}
 	}
