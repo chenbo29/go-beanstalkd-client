@@ -11,6 +11,8 @@ var host string
 var port string
 
 type ParamsData struct {
+	Name        string
+	Description string
 	Host        string
 	Port        string
 	Num         uint64
@@ -25,7 +27,8 @@ var CommandLine *flag.FlagSet
 var ErrHelp = errors.New("flag: help requested")
 
 func init() {
-	fmt.Println("init")
+	returnParams.Name = "go-beanstalk-client"
+	returnParams.Description = "go-beanstalk-client By chenbotome@163.com"
 	returnParams.Host = "127.0.0.1"
 	returnParams.Port = "11300"
 	if len(os.Args) > 1 {

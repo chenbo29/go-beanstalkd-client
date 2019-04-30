@@ -16,12 +16,15 @@
 package beans
 
 import (
+	"bytes"
 	"fmt"
-	"github.com/astaxie/beego/logs"
 	"github.com/beanstalkd/go-beanstalk"
 	"github.com/chenbo29/go-beanstalkd-client/config"
 	"github.com/chenbo29/go-beanstalkd-client/connect"
+	"github.com/chenbo29/go-beanstalkd-client/loglocal"
+	"log"
 	"os"
+	"os/exec"
 	"sort"
 	"time"
 )
@@ -31,6 +34,8 @@ var conn *beanstalk.Conn
 var bsdParamsData *config.ParamsData
 var separatorLength = 50
 var tubesChan chan string
+var commandName = "go-beanstalk-client"
+var Daemon = false
 
 func Run() {
 	bsdParamsData = config.GetParams()
@@ -43,8 +48,10 @@ func Run() {
 			Start()
 		case "stop":
 			Stop()
-		case "test":
+		case "testPut":
 			TestPut(&os.Args[2])
+		case "test":
+			Test()
 		default:
 			fmt.Fprintf(os.Stderr, "Usage: %s {start|stop|status}\n", os.Args[0])
 		}
@@ -77,22 +84,20 @@ func Start() {
 }
 
 func Stop() {
-	procAttr := &os.ProcAttr{
-		Dir:   "D:/code/go-project/",
-		Files: []*os.File{os.Stdin, os.Stdout, os.Stderr},
-	}
-	process, err := os.StartProcess("chenbo", os.Args, procAttr)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(process)
-	fmt.Println("Stop Beanstalkd")
+	c, _ := exec.LookPath("test")
+	args := os.Args[1:]
+	fmt.Println(args[1:])
+	beans := exec.Command(c, args...)
+	beans.Run()
+	var out bytes.Buffer
+	beans.Stdout = &out
+	fmt.Println(out.String())
 }
 
 func ListTubeInfo(t *beanstalk.Tube) {
 	info, err := t.Stats()
 	if err != nil {
-		logs.Error(err)
+		log.Println(err)
 		return
 	}
 	info["Tube`s Status Info"] = fmt.Sprintf("[%s]", t.Name)
@@ -106,7 +111,7 @@ func ListTubesInfo() {
 	for _, tubeName := range tubesName {
 		tube := beanstalk.Tube{conn, tubeName}
 		info, _ := tube.Stats()
-		fmt.Println(info)
+		loglocal.Info(info)
 	}
 }
 
@@ -133,7 +138,7 @@ func GetSliceByMapString(m map[string]string) []string {
 
 func ShowStatus(s *[]string, status *map[string]string) {
 	for _, key := range *s {
-		fmt.Println(key + GetSeparator(len(key), separatorLength) + (*status)[key] + " [" + commentMap[key] + "]")
+		loglocal.Info(key + GetSeparator(len(key), separatorLength) + (*status)[key] + " [" + commentMap[key] + "]")
 	}
 }
 
@@ -153,11 +158,11 @@ func Work(tubeName *string) {
 		jobId, jobBody, err := tubeSet.Reserve(5 * time.Second)
 		if err != nil {
 			errorInfo := fmt.Sprintf("%s [%s]", err, *tubeName)
-			logs.Error(errorInfo)
+			loglocal.Error(errorInfo)
 			continue
 		}
 		info := fmt.Sprintf("Tube[%s] JobId[%d] JobBody[%s]", *tubeName, jobId, string(jobBody))
-		logs.Info(info)
+		loglocal.Info(info)
 		// todo 处理队列任务
 		workConn.Delete(jobId)
 	}
@@ -169,10 +174,15 @@ func Monitor(originTubeNum int) {
 		TubeNum := len(TubesName)
 		if TubeNum > originTubeNum {
 			for x := originTubeNum; x < TubeNum; x++ {
-				logs.Info(fmt.Sprintf("Monitor Tube [%s] Reserve Worker Start", TubesName[x]))
+				loglocal.Info(fmt.Sprintf("Monitor Tube [%s] Reserve Worker Start", TubesName[x]))
 				go Work(&TubesName[x])
 			}
 			originTubeNum = TubeNum
 		}
 	}
+}
+
+func Test() {
+	cmd := exec.Command("D:\\code\\go-bin\\main.exe", "start")
+	cmd.Start()
 }
