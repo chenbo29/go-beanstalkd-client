@@ -16,7 +16,6 @@
 package beans
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/beanstalkd/go-beanstalk"
 	"github.com/chenbo29/go-beanstalkd-client/config"
@@ -24,7 +23,6 @@ import (
 	"github.com/chenbo29/go-beanstalkd-client/loglocal"
 	"log"
 	"os"
-	"os/exec"
 	"sort"
 	"time"
 )
@@ -46,12 +44,8 @@ func Run() {
 			Status()
 		case "start":
 			Start()
-		case "stop":
-			Stop()
 		case "testPut":
 			TestPut(&os.Args[2])
-		case "test":
-			Test()
 		default:
 			fmt.Fprintf(os.Stderr, "Usage: %s {start|stop|status}\n", os.Args[0])
 		}
@@ -83,17 +77,6 @@ func Start() {
 	}
 }
 
-func Stop() {
-	c, _ := exec.LookPath("test")
-	args := os.Args[1:]
-	fmt.Println(args[1:])
-	beans := exec.Command(c, args...)
-	beans.Run()
-	var out bytes.Buffer
-	beans.Stdout = &out
-	fmt.Println(out.String())
-}
-
 func ListTubeInfo(t *beanstalk.Tube) {
 	info, err := t.Stats()
 	if err != nil {
@@ -109,7 +92,7 @@ func ListTubeInfo(t *beanstalk.Tube) {
 func ListTubesInfo() {
 	tubesName, _ := conn.ListTubes()
 	for _, tubeName := range tubesName {
-		tube := beanstalk.Tube{conn, tubeName}
+		tube := beanstalk.Tube{Conn: conn, Name: tubeName}
 		info, _ := tube.Stats()
 		loglocal.Info(info)
 	}
@@ -143,7 +126,7 @@ func ShowStatus(s *[]string, status *map[string]string) {
 }
 
 func TestPut(tubeName *string) {
-	tube := beanstalk.Tube{conn, *tubeName}
+	tube := beanstalk.Tube{Conn: conn, Name: *tubeName}
 	info := []byte(*tubeName + " test info")
 	jobId, _ := tube.Put(info, 0, 0, 10)
 	fmt.Println(jobId)
@@ -180,9 +163,4 @@ func Monitor(originTubeNum int) {
 			originTubeNum = TubeNum
 		}
 	}
-}
-
-func Test() {
-	cmd := exec.Command("D:\\code\\go-bin\\main.exe", "start")
-	cmd.Start()
 }
