@@ -133,7 +133,7 @@ func TestPut(tubeName *string) {
 	tube := beanstalk.Tube{Conn: conn, Name: *tubeName}
 	for i := 0; i < 100; i++ {
 		info := []byte(*tubeName + " test info " + strconv.Itoa(i))
-		jobId, _ := tube.Put(info, 0, 0, 10)
+		jobId, _ := tube.Put(info, 0, 0, 10*time.Second)
 		fmt.Println(jobId)
 	}
 	ListTubeInfo(&tube)
@@ -163,19 +163,17 @@ func Monitor(originTubeNum int) {
 
 // Tube工厂
 type TubeFactory struct {
-	workerNum  int
-	JobChannel chan *Job
-	name       string
-	conn       *beanstalk.Conn
+	workerNum int
+	name      string
+	conn      *beanstalk.Conn
 }
 
 // 创建Tube工厂
 func NewTubeFactory(name string, num int, conn *beanstalk.Conn) *TubeFactory {
 	w := TubeFactory{
-		workerNum:  num,
-		name:       name,
-		conn:       conn,
-		JobChannel: make(chan *Job),
+		workerNum: num,
+		name:      name,
+		conn:      conn,
 	}
 	return &w
 }
@@ -183,32 +181,63 @@ func NewTubeFactory(name string, num int, conn *beanstalk.Conn) *TubeFactory {
 // 工厂启动
 func (tf *TubeFactory) Run() {
 	loglocal.Info(fmt.Sprintf("TubeFactory(%s) Running, %d`s Worker", tf.name, tf.workerNum))
-	var info string
 	for i := 0; i < tf.workerNum; i++ {
-		w := NewWorker(strconv.Itoa(i), func(name string, conn *beanstalk.Conn, tubeName string) error {
-			tubeSet := beanstalk.NewTubeSet(conn, tubeName)
+		w := NewWorker(strconv.Itoa(i), func(name string, conn *beanstalk.Conn) error {
+			tubeSet := beanstalk.NewTubeSet(conn, tf.name)
+			var errorDeleteJob error
+			var errorReserve error
+			//var errorBury error
+			var jobId uint64
+			var jobBody []byte
 			for {
-				jobId, jobBody, err := tubeSet.Reserve(reserveTime)
-				if err != nil {
-					loglocal.Error(fmt.Sprintf("%s Error: %s", tubeName, err))
+				jobId, jobBody, errorReserve = tubeSet.Reserve(reserveTime)
+				if errorReserve != nil {
+					//loglocal.Error(fmt.Sprintf("%s Error: %s", tf.name, errorReserve))
 				} else {
-					loglocal.Info(fmt.Sprintf("%s Get JobId [%d] JobBody [%s]", tubeName, jobId, string(jobBody)))
-					info = fmt.Sprintf("%s Worker(%s) Start To Do Job(%d)", tf.name, name, jobId)
-					loglocal.Info(info)
-					time.Sleep(3 * time.Second)
-					err := tf.conn.Delete(jobId)
-					if err != nil {
-						loglocal.Error(err)
-					} else {
-						info = fmt.Sprintf("%s Worker(%s) Start To Do Job(%d) Finish !", tf.name, name, jobId)
-						loglocal.Info(info)
+					loglocal.Info(fmt.Sprintf("%s Worker(%s) Get JobId [%d] JobBody [%s] And Start To Do", tf.name, name, jobId, string(jobBody)))
+
+					for {
+						if errorDeleteJob = tf.conn.Delete(jobId); errorDeleteJob != nil {
+							time.Sleep(1 * time.Second)
+							//loglocal.Error(errorDeleteJob)
+							//loglocal.Error(tf.conn.StatsJob(jobId))
+							continue
+						} else {
+							loglocal.Info(fmt.Sprintf("%s Worker(%s) Start To Do Job(%d) Finish !", tf.name, name, jobId))
+							break
+						}
 					}
 				}
-				time.Sleep(5 * time.Second)
+				time.Sleep(time.Second * 1)
 			}
+			return nil
 		})
 		go w.Execute(tf)
 	}
+}
+
+// 工人
+type Worker struct {
+	name     string                                        // 名称
+	f        func(name string, conn *beanstalk.Conn) error //操作步骤内容
+	conn     *beanstalk.Conn
+	tubeName string
+}
+
+// 分配工人
+func NewWorker(name string, f func(name string, conn *beanstalk.Conn) error) *Worker {
+	w := Worker{
+		name: name,
+		f:    f,
+	}
+	return &w
+}
+
+// 工人开始操作
+func (w *Worker) Execute(tf *TubeFactory) {
+	bsdParamsData = config.GetParams()
+	conn = connect.Conn(bsdParamsData)
+	_ = w.f(w.name, conn)
 }
 
 // 获取任务Job
@@ -223,46 +252,4 @@ func (w *Worker) ReserveJob() {
 		}
 		time.Sleep(5 * time.Second)
 	}
-}
-
-// 任务
-type Job struct {
-	id   uint64
-	body string
-}
-
-// 新建任务
-func NewJob(id uint64, body string) *Job {
-	j := Job{
-		id:   id,
-		body: body,
-	}
-	return &j
-}
-
-// 工人
-type Worker struct {
-	name     string                                                         // 名称
-	f        func(name string, conn *beanstalk.Conn, tubeName string) error //操作步骤内容
-	conn     *beanstalk.Conn
-	tubeName string
-}
-
-// 分配工人
-func NewWorker(name string, f func(name string, conn *beanstalk.Conn, tubeName string) error) *Worker {
-	w := Worker{
-		name: name,
-		f:    f,
-	}
-
-	return &w
-}
-
-// 工人开始操作
-func (w *Worker) Execute(tf *TubeFactory) {
-	bsdParamsData = config.GetParams()
-	conn = connect.Conn(bsdParamsData)
-	//info := fmt.Sprintf("%s Worker(%s) Take A Job(%d)", tf.name, w.name, job.id)
-	//loglocal.Info(info)
-	_ = w.f(w.name, conn, tf.name)
 }
