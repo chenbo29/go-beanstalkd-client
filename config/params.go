@@ -36,6 +36,7 @@ func init() {
 		CommandLine.Usage = func() {
 			fmt.Fprintf(os.Stderr, "go-beanstalkd created by chenbotome@163.com \n Usage of %s:\n", os.Args[0])
 			CommandLine.PrintDefaults()
+			os.Exit(0)
 		}
 		switch os.Args[1] {
 		case "start":
