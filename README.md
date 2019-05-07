@@ -1,9 +1,9 @@
 # go-beanstalk-client
-* [中文]("/README.md")
-* [English]("/README.md")
+* [中文](/README_ZH_CN.md)
+* [English](/README.md)
 ## 目的
-* 学习阅读GoLand的相关语法知识之后进行的练手项目，帮助自身理解基础语法并深入理解其语言的特性。
-* 使用beanstalk队列（Beanstalk is a simple, fast work queue. https://beanstalkd.github.io/）并利用Go的协程goroutine特性，可以对每一个Tube管道创建一个工厂，工厂拥有若干自定义数量的工人，工人领取任务处理。
+* Learn to learn the relevant grammar knowledge of GoLand and help you understand the basic grammar and understand the characteristics of the language.
+* Using the beanstalk queue (Beanstalk is a simple, fast work queue. https://beanstalkd.github.io/) and using Go's coroutine goroutine feature, you can create a factory for each Tube pipeline, the factory has a number of custom quantities Workers and workers receive tasks.
 ## 使用
 * go run beans.go status -h
 * go run beans.go start -h
