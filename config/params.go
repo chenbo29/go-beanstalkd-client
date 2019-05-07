@@ -15,7 +15,6 @@ type ParamsData struct {
 	Description string
 	Host        string
 	Port        string
-	Num         uint64
 	Tube        string
 	IsAllStatus bool
 	Daemon      bool
@@ -44,7 +43,6 @@ func init() {
 			CommandLine.StringVar(&returnParams.Port, "p", "11300", "the port of beanstalkd (shorthand)")
 			CommandLine.StringVar(&returnParams.Host, "host", "127.0.0.1", "the host of beanstalkd")
 			CommandLine.StringVar(&returnParams.Host, "h", "127.0.0.1", "the host of beanstalkd (shorthand)")
-			CommandLine.Uint64Var(&returnParams.Num, "num", 2, "the host of beanstalkd (shorthand)")
 			CommandLine.BoolVar(&returnParams.Daemon, "daemon", false, "Start With Daemon")
 			CommandLine.BoolVar(&returnParams.Daemon, "d", false, "Start With Daemon (shorthand)")
 			CommandLine.Parse(os.Args[2:])
