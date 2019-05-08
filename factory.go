@@ -57,7 +57,6 @@ func (tf *TubeFactory) Run() {
 				}
 				time.Sleep(time.Second * 1)
 			}
-			return nil
 		})
 		go w.Execute(tf)
 	}
