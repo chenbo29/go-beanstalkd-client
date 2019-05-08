@@ -15,12 +15,16 @@ var bsdParamsData *config.ParamsData
 
 // init 初始化日志配置
 func init() {
+	var logPath string
 	bsdParamsData = config.GetParams()
 	if bsdParamsData.Daemon {
-		path, _ := filepath.Abs(os.Args[0])
-		logPath := filepath.Dir(path)
+		if os.Getenv("GOOS") == "windows" {
+			path, _ := filepath.Abs(os.Args[0])
+			logPath = filepath.Dir(path)
+		} else {
+			logPath = "/var/log"
+		}
 		logFileName = logPath + fmt.Sprintf("\\%s.log", time.Now().Format("2006-01-02"))
-		fmt.Println("Log Init")
 		fmt.Println(logFileName)
 		logFile, err := os.OpenFile(logFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0766)
 		if err != nil {
