@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// Tube工厂
+// TubeFactory Tube工厂
 type TubeFactory struct {
 	workerNum int
 	name      string
@@ -34,23 +34,23 @@ func (tf *TubeFactory) Run() {
 			var errorDeleteJob error
 			var errorReserve error
 			//var errorBury error
-			var jobId uint64
+			var jobID uint64
 			var jobBody []byte
 			for {
-				jobId, jobBody, errorReserve = tubeSet.Reserve(reserveTime)
+				jobID, jobBody, errorReserve = tubeSet.Reserve(reserveTime)
 				if errorReserve != nil {
 					//loglocal.Error(fmt.Sprintf("%s Error: %s", tf.name, errorReserve))
 				} else {
-					loglocal.Info(fmt.Sprintf("%s Worker(%s) Get JobId [%d] JobBody [%s] And Start To Do", tf.name, name, jobId, string(jobBody)))
+					loglocal.Info(fmt.Sprintf("%s Worker(%s) Get JobId [%d] JobBody [%s] And Start To Do", tf.name, name, jobID, string(jobBody)))
 
 					for {
-						if errorDeleteJob = tf.conn.Delete(jobId); errorDeleteJob != nil {
+						if errorDeleteJob = tf.conn.Delete(jobID); errorDeleteJob != nil {
 							time.Sleep(1 * time.Second)
 							//loglocal.Error(errorDeleteJob)
 							//loglocal.Error(tf.conn.StatsJob(jobId))
 							continue
 						} else {
-							loglocal.Info(fmt.Sprintf("%s Worker(%s) Start To Do Job(%d) Finish !", tf.name, name, jobId))
+							loglocal.Info(fmt.Sprintf("%s Worker(%s) Start To Do Job(%d) Finish !", tf.name, name, jobID))
 							break
 						}
 					}

@@ -41,6 +41,7 @@ func init() {
 	conn = connect.Conn(bsdParamsData)
 }
 
+// Run start to run command
 func Run() {
 	if len(os.Args) > 1 {
 		switch os.Args[1] {
@@ -139,8 +140,8 @@ func TestPut(tubeName *string) {
 	tube := beanstalk.Tube{Conn: conn, Name: *tubeName}
 	for i := 0; i < 100; i++ {
 		info := []byte(*tubeName + " test info " + strconv.Itoa(i))
-		jobId, _ := tube.Put(info, 0, 0, 3*time.Second)
-		fmt.Println(jobId)
+		jobID, _ := tube.Put(info, 0, 0, 3*time.Second)
+		fmt.Println(jobID)
 	}
 	ListTubeInfo(&tube)
 }
