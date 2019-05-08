@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-// 应用的执行参数配置信息
+// ParamsData 应用的执行参数配置信息
 type ParamsData struct {
 	Name        string
 	Description string

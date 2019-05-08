@@ -30,7 +30,7 @@ func init() {
 	}
 }
 
-// Info
+// Info info
 func Info(v ...interface{}) {
 	if bsdParamsData.Daemon {
 		logLocal.Println(v)
@@ -39,7 +39,7 @@ func Info(v ...interface{}) {
 	}
 }
 
-// Error
+// Error error
 func Error(v ...interface{}) {
 	if bsdParamsData.Daemon {
 		logLocal.Println(v)
