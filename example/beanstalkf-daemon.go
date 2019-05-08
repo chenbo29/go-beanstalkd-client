@@ -35,8 +35,10 @@ func main() {
 
 // RecordPid 记录进程PID
 func RecordPid(pro *os.Process) {
-	f, _ := os.OpenFile(os.Getenv("GOBIN")+"/"+name+".pid", os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0755)
-	_, err := f.WriteString(strconv.Itoa(pro.Pid))
+	var err error
+	f, err := os.OpenFile(os.Getenv("GOBIN")+"/"+name+".pid", os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0755)
+	CheckErr(err)
+	_, err = f.WriteString(strconv.Itoa(pro.Pid))
 	CheckErr(err)
 	CheckErr(f.Close())
 }

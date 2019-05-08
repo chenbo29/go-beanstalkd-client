@@ -24,7 +24,7 @@ func init() {
 		} else {
 			logPath = "/var/log"
 		}
-		logFileName = logPath + fmt.Sprintf("\\%s.log", time.Now().Format("2006-01-02"))
+		logFileName = logPath + fmt.Sprintf("/beanstalkf-%s.log", time.Now().Format("2006-01-02"))
 		fmt.Println(logFileName)
 		logFile, err := os.OpenFile(logFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0766)
 		if err != nil {
