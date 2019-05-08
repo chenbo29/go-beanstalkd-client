@@ -1,15 +1,12 @@
 package config
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"os"
 )
 
-var host string
-var port string
-
+// 应用的执行参数配置信息
 type ParamsData struct {
 	Name        string
 	Description string
@@ -21,10 +18,9 @@ type ParamsData struct {
 }
 
 var returnParams ParamsData
-
 var CommandLine *flag.FlagSet
-var ErrHelp = errors.New("flag: help requested")
 
+// 初始化命令执行的参数说明和基础配置
 func init() {
 	returnParams.Name = "go-beanstalk-client"
 	returnParams.Description = "go-beanstalk-client By chenbotome@163.com"
@@ -56,6 +52,7 @@ func init() {
 	}
 }
 
+// 获取配置参数信息
 func GetParams() *ParamsData {
 	return &returnParams
 }
