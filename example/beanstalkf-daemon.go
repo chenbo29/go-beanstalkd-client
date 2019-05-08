@@ -12,7 +12,7 @@ const name = "beanstalkf"
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Printf("Usage: %s [command]\n", os.Args[0])
+		fmt.Printf("Usage: %s [start|stop|status]\n", os.Args[0])
 		os.Exit(1)
 	}
 	switch os.Args[1] {
@@ -27,8 +27,8 @@ func main() {
 		CheckErr(pro.Kill())
 		fmt.Printf("Pid [%d] Stop \n", pid)
 	default:
-		fmt.Printf("Usage: %s [start|stop]\n", os.Args[0])
-		os.Exit(1)
+		fmt.Printf("Usage: %s [start|stop|status]\n", os.Args[0])
+		os.Exit(0)
 	}
 
 }

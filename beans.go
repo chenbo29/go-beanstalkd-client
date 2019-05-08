@@ -53,7 +53,11 @@ func Run() {
 			TestPut(&os.Args[2])
 		default:
 			fmt.Fprintf(os.Stderr, "Usage: %s {start|stop|status}\n", os.Args[0])
+			os.Exit(0)
 		}
+	} else {
+		fmt.Fprintf(os.Stderr, "Usage: %s {start|stop|status}\n", os.Args[0])
+		os.Exit(0)
 	}
 	return
 }
