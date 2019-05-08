@@ -8,6 +8,7 @@ import (
 
 var beanstalkConn *beanstalk.Conn
 
+// connect beanstalk
 func Conn(params *config.ParamsData) *beanstalk.Conn {
 	beanstalkConn, err := beanstalk.Dial("tcp", params.Host+":"+params.Port)
 	if err != nil {
