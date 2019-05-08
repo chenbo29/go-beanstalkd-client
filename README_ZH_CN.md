@@ -11,8 +11,8 @@
 ./install.sh
 ```
 ## 可执行文件
-*beanstalkf
-*beanstalkf-daemon 后台启动
+* beanstalkf
+* beanstalkf-daemon 后台启动
 ## Command
 * start
 * status

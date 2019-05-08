@@ -14,8 +14,8 @@ cd example
 ./install.sh
 ```
 ## execute file
-*beanstalkf
-*beanstalkf-daemon background
+* beanstalkf
+* beanstalkf-daemon background
 ## Command
 * start
 * status
