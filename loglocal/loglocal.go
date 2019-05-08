@@ -13,7 +13,7 @@ var logFileName string
 var logLocal *log.Logger
 var bsdParamsData *config.ParamsData
 
-// 初始化日志配置
+// init 初始化日志配置
 func init() {
 	bsdParamsData = config.GetParams()
 	if bsdParamsData.Daemon {
@@ -30,7 +30,7 @@ func init() {
 	}
 }
 
-// 记录信息
+// Info
 func Info(v ...interface{}) {
 	if bsdParamsData.Daemon {
 		logLocal.Println(v)
@@ -39,7 +39,7 @@ func Info(v ...interface{}) {
 	}
 }
 
-// 记录错误
+// Error
 func Error(v ...interface{}) {
 	if bsdParamsData.Daemon {
 		logLocal.Println(v)

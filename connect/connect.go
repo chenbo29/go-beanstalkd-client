@@ -6,9 +6,7 @@ import (
 	"log"
 )
 
-var beanstalkConn *beanstalk.Conn
-
-// connect beanstalk
+// Conn connect beanstalk by params
 func Conn(params *config.ParamsData) *beanstalk.Conn {
 	beanstalkConn, err := beanstalk.Dial("tcp", params.Host+":"+params.Port)
 	if err != nil {

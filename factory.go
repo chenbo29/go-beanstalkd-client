@@ -15,7 +15,7 @@ type TubeFactory struct {
 	conn      *beanstalk.Conn
 }
 
-// 创建Tube工厂
+// NewTubeFactory 创建Tube工厂
 func NewTubeFactory(name string, num int, conn *beanstalk.Conn) *TubeFactory {
 	w := TubeFactory{
 		workerNum: num,
@@ -25,7 +25,7 @@ func NewTubeFactory(name string, num int, conn *beanstalk.Conn) *TubeFactory {
 	return &w
 }
 
-// 工厂启动
+// Run 工厂启动
 func (tf *TubeFactory) Run() {
 	loglocal.Info(fmt.Sprintf("TubeFactory(%s) Running, %d`s Worker", tf.name, tf.workerNum))
 	for i := 0; i < tf.workerNum; i++ {

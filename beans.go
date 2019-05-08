@@ -57,7 +57,7 @@ func Run() {
 	return
 }
 
-// 状态信息
+// Status view the tube status
 func Status() {
 	if bsdParamsData.IsAllStatus {
 		statusMap, _ := conn.Stats()
@@ -73,7 +73,7 @@ func Status() {
 	}
 }
 
-// 获取tube的状态信息
+// Start start to work
 func Start() {
 	go Monitor(0)
 	for {
@@ -81,6 +81,7 @@ func Start() {
 	}
 }
 
+// ListTubeInfo view one tube status
 func ListTubeInfo(t *beanstalk.Tube) {
 	info, err := t.Stats()
 	if err != nil {
@@ -92,6 +93,7 @@ func ListTubeInfo(t *beanstalk.Tube) {
 	return
 }
 
+// ListTubesInfo view all tubes status
 func ListTubesInfo() {
 	tubesName, _ := conn.ListTubes()
 	for _, tubeName := range tubesName {
@@ -101,6 +103,7 @@ func ListTubesInfo() {
 	}
 }
 
+// GetSeparator get the separator
 func GetSeparator(x int, y int) string {
 	num := y - x
 	separator := " "
@@ -111,6 +114,7 @@ func GetSeparator(x int, y int) string {
 	return separator
 }
 
+// GetSliceByMapString 将无序的map转换为slice
 func GetSliceByMapString(m map[string]string) []string {
 	temp := make([]string, len(m))
 	i := 0
@@ -122,6 +126,7 @@ func GetSliceByMapString(m map[string]string) []string {
 	return temp
 }
 
+// ShowStatus 将状态信息的格式转化为易阅读的格式
 func ShowStatus(status *map[string]string) {
 	s := GetSliceByMapString(*status)
 	for _, key := range s {
@@ -129,10 +134,9 @@ func ShowStatus(status *map[string]string) {
 	}
 }
 
+// TestPut tube Put Job
 func TestPut(tubeName *string) {
 	tube := beanstalk.Tube{Conn: conn, Name: *tubeName}
-	//  15:44:18
-	//15:45:01
 	for i := 0; i < 100; i++ {
 		info := []byte(*tubeName + " test info " + strconv.Itoa(i))
 		jobId, _ := tube.Put(info, 0, 0, 3*time.Second)
@@ -141,6 +145,7 @@ func TestPut(tubeName *string) {
 	ListTubeInfo(&tube)
 }
 
+// TubeFactoryStart 管道工厂启动
 func TubeFactoryStart(tubeName string) {
 	paramsData := config.GetParams()
 	conn := connect.Conn(paramsData)
@@ -148,7 +153,7 @@ func TubeFactoryStart(tubeName string) {
 	tf.Run()
 }
 
-// 厂长
+// Monitor 厂长监控
 func Monitor(originTubeNum int) {
 	for {
 		TubesName, _ := conn.ListTubes()

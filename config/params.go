@@ -18,16 +18,15 @@ type ParamsData struct {
 }
 
 var returnParams ParamsData
-var CommandLine *flag.FlagSet
 
-// 初始化命令执行的参数说明和基础配置
+// init 初始化命令执行的参数说明和基础配置
 func init() {
 	returnParams.Name = "go-beanstalk-client"
 	returnParams.Description = "go-beanstalk-client By chenbotome@163.com"
 	returnParams.Host = "127.0.0.1"
 	returnParams.Port = "11300"
 	if len(os.Args) > 1 {
-		CommandLine = flag.NewFlagSet(os.Args[1], 0)
+		CommandLine := flag.NewFlagSet(os.Args[1], 0)
 		CommandLine.Usage = func() {
 			fmt.Fprintf(os.Stderr, "go-beanstalkd created by chenbotome@163.com \n Usage of %s:\n", os.Args[0])
 			CommandLine.PrintDefaults()
@@ -52,7 +51,7 @@ func init() {
 	}
 }
 
-// 获取配置参数信息
+// GetParams 获取配置参数信息
 func GetParams() *ParamsData {
 	return &returnParams
 }
