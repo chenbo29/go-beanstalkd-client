@@ -32,8 +32,14 @@ var commentMap = map[string]string{"cmd-put": "总共执行put指令的次数", 
 var conn *beanstalk.Conn
 var bsdParamsData *config.ParamsData
 
+type JobExecuteFunc struct {
+	Execute func(id uint64, body []byte) bool
+}
+
+var jobExecuteFuncChannel chan *JobExecuteFunc
+
 const separatorLength = 50
-const workerNum = 20
+const workerNum = 2
 const reserveTime = 5
 
 func init() {
@@ -42,13 +48,13 @@ func init() {
 }
 
 // Run start to run command
-func Run() {
+func Run(jef *JobExecuteFunc) {
 	if len(os.Args) > 1 {
 		switch os.Args[1] {
 		case "status":
 			Status()
 		case "start":
-			Start()
+			Start(jef)
 		case "testPut":
 			TestPut(&os.Args[2])
 		default:
@@ -79,8 +85,8 @@ func Status() {
 }
 
 // Start start to work
-func Start() {
-	go Monitor(0)
+func Start(jef *JobExecuteFunc) {
+	go Monitor(0, jef)
 	for {
 		time.Sleep(1 * time.Second)
 	}
@@ -151,22 +157,22 @@ func TestPut(tubeName *string) {
 }
 
 // TubeFactoryStart 管道工厂启动
-func TubeFactoryStart(tubeName string) {
+func TubeFactoryStart(tubeName string, executeFunc *JobExecuteFunc) {
 	paramsData := config.GetParams()
 	conn := connect.Conn(paramsData)
-	tf := NewTubeFactory(tubeName, workerNum, conn)
+	tf := NewTubeFactory(tubeName, workerNum, conn, executeFunc)
 	tf.Run()
 }
 
 // Monitor 厂长监控
-func Monitor(originTubeNum int) {
+func Monitor(originTubeNum int, executeFunc *JobExecuteFunc) {
 	for {
 		TubesName, _ := conn.ListTubes()
 		TubeNum := len(TubesName)
 		if TubeNum > originTubeNum {
 			for x := originTubeNum; x < TubeNum; x++ {
 				loglocal.Info(fmt.Sprintf("Monitor TubeFactory(%s) Start", TubesName[x]))
-				go TubeFactoryStart(TubesName[x])
+				go TubeFactoryStart(TubesName[x], executeFunc)
 			}
 			originTubeNum = TubeNum
 		}
