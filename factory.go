@@ -55,6 +55,7 @@ func (tf *TubeFactory) Run() {
 				}
 				time.Sleep(time.Second * 1)
 			}
+			return errorReserve
 		})
 		go w.Execute(tf)
 	}
@@ -70,15 +71,18 @@ func DeleteJob(tf *TubeFactory, workerName string, jobID uint64) {
 			//loglocal.Error(tf.conn.StatsJob(jobId))
 			continue
 		} else {
-			loglocal.Info(fmt.Sprintf("%s Worker(%s) Start To Do Job(%d) Finish !", tf.name, workerName, jobID))
+			loglocal.Info(fmt.Sprintf("%s Worker(%s) Start To Do Job(%d) Finish ✔ !", tf.name, workerName, jobID))
 			break
 		}
 	}
 }
 
+// BuryJob 回收Job
 func BuryJob(tf *TubeFactory, workerName string, jobID uint64) {
-	loglocal.Info(fmt.Sprintf("%s Worker(%s) Start To Do Job(%d) Failed ⚠ !", tf.name, workerName, jobID))
 	if err := tf.conn.Bury(jobID, 0); err != nil {
+		loglocal.Info(fmt.Sprintf("%s Worker(%s) Start To Do Job(%d) Failed ⚠ !", tf.name, workerName, jobID))
 		loglocal.Error(err)
+	} else {
+		loglocal.Info(fmt.Sprintf("%s Worker(%s) Start To Do Job(%d) Failed And Buried ⚠ !", tf.name, workerName, jobID))
 	}
 }
