@@ -10,11 +10,6 @@
 ```bash
 ./install.sh
 ```
-## 安装-Windows
-```bash
-go install beanstalkf.go
-go install beanstalkf-daemon.go
-```
 ## 可执行文件
 * beanstalkf
 * beanstalkf-daemon 后台启动
