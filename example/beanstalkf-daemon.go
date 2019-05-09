@@ -9,6 +9,7 @@ import (
 )
 
 const name = "beanstalkf"
+const pidPath = "/var/run/"
 
 func main() {
 	if len(os.Args) < 2 {
@@ -36,7 +37,7 @@ func main() {
 // RecordPid 记录进程PID
 func RecordPid(pro *os.Process) {
 	var err error
-	f, err := os.OpenFile(os.Getenv("GOBIN")+"/"+name+".pid", os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0755)
+	f, err := os.OpenFile(pidPath+name+".pid", os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0755)
 	CheckErr(err)
 	_, err = f.WriteString(strconv.Itoa(pro.Pid))
 	CheckErr(err)
@@ -45,7 +46,7 @@ func RecordPid(pro *os.Process) {
 
 // GetPid 获取进程PID
 func GetPid() int {
-	p, err := ioutil.ReadFile(os.Getenv("GOBIN") + "/" + name + ".pid")
+	p, err := ioutil.ReadFile(pidPath + name + ".pid")
 	CheckErr(err)
 	pid, e := strconv.Atoi(string(p))
 	CheckErr(e)
