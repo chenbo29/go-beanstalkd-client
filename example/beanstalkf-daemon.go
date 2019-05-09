@@ -47,7 +47,9 @@ func RecordPid(pro *os.Process) {
 // GetPid 获取进程PID
 func GetPid() int {
 	p, err := ioutil.ReadFile(pidPath + name + ".pid")
-	CheckErr(err)
+	if err != nil {
+		return 0
+	}
 	pid, e := strconv.Atoi(string(p))
 	CheckErr(e)
 	return pid
@@ -63,6 +65,7 @@ func CheckErr(err error) {
 
 // Start 启动
 func Start() {
+	CheckRunningProcess()
 	exe := os.Getenv("GOEXE")
 	var cmdName string
 	if exe == ".exe" {
@@ -91,4 +94,12 @@ func Start() {
 	process, err := os.StartProcess(cmdName, args, procAttr)
 	CheckErr(err)
 	RecordPid(process)
+}
+
+func CheckRunningProcess() {
+	pid := GetPid()
+	if pid != 0 {
+		pro, _ := os.FindProcess(pid)
+		pro.Kill()
+	}
 }
