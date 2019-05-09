@@ -3,8 +3,6 @@ package beans
 import (
 	"fmt"
 	"github.com/beanstalkd/go-beanstalk"
-	"github.com/chenbo29/go-beanstalkd-client/config"
-	"github.com/chenbo29/go-beanstalkd-client/connect"
 	"github.com/chenbo29/go-beanstalkd-client/loglocal"
 	"time"
 )
@@ -28,9 +26,9 @@ func NewWorker(name string, f func(name string, conn *beanstalk.Conn) error) *Wo
 
 // Execute 工人开始操作
 func (w *Worker) Execute(tf *TubeFactory) {
-	bsdParamsData = config.GetParams()
-	conn = connect.Conn(bsdParamsData)
-	_ = w.f(w.name, conn)
+	//bsdParamsData = config.GetParams()
+	//conn = connect.Conn(bsdParamsData)
+	_ = w.f(w.name, tf.conn)
 }
 
 // ReserveJob 获取任务Job
