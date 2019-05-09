@@ -28,7 +28,7 @@ func init() {
 		fmt.Println(logFileName)
 		logFile, err := os.OpenFile(logFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0766)
 		if err != nil {
-			panic(err)
+			fmt.Println(err)
 		}
 		logLocal = log.New(logFile, bsdParamsData.Name, log.LstdFlags)
 	}
