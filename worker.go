@@ -1,10 +1,7 @@
 package beans
 
 import (
-	"fmt"
 	"github.com/beanstalkd/go-beanstalk"
-	"github.com/chenbo29/go-beanstalkd-client/loglocal"
-	"time"
 )
 
 // Worker 工人
@@ -29,18 +26,4 @@ func (w *Worker) Execute(tf *TubeFactory) {
 	//bsdParamsData = config.GetParams()
 	//conn = connect.Conn(bsdParamsData)
 	_ = w.f(w.name, tf.conn)
-}
-
-// ReserveJob 获取任务Job
-func (w *Worker) ReserveJob() {
-	tubeSet := beanstalk.NewTubeSet(w.conn, w.tubeName)
-	for {
-		jobID, jobBody, err := tubeSet.Reserve(reserveTime)
-		if err != nil {
-			loglocal.Error(fmt.Sprintf("%s Error: %s", w.tubeName, err))
-		} else {
-			loglocal.Info(fmt.Sprintf("%s Get JobId [%d] JobBody [%s]", w.tubeName, jobID, string(jobBody)))
-		}
-		time.Sleep(5 * time.Second)
-	}
 }

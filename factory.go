@@ -8,12 +8,19 @@ import (
 	"time"
 )
 
+type job struct {
+	id   uint64
+	body []byte
+}
+
 // TubeFactory Tube工厂
 type TubeFactory struct {
 	workerNum   int
 	name        string
 	conn        *beanstalk.Conn
 	executeFunc *JobExecuteFunc
+	tubeSet     *beanstalk.TubeSet
+	jobChan     chan job
 }
 
 // NewTubeFactory 创建Tube工厂
@@ -24,12 +31,15 @@ func NewTubeFactory(name string, num int, conn *beanstalk.Conn, executeFunc *Job
 		conn:        conn,
 		executeFunc: executeFunc,
 	}
+	w.tubeSet = beanstalk.NewTubeSet(conn, name)
+	w.jobChan = make(chan job)
 	return &w
 }
 
 // Run 工厂启动
 func (tf *TubeFactory) Run() {
 	loglocal.Info(fmt.Sprintf("TubeFactory(%s) Running, %d`s Worker", tf.name, tf.workerNum))
+	go tf.ReserveJob()
 	for i := 0; i < tf.workerNum; i++ {
 		w := NewWorker(strconv.Itoa(i), func(name string, conn *beanstalk.Conn) error {
 			executeFunc := *tf.executeFunc
@@ -41,6 +51,8 @@ func (tf *TubeFactory) Run() {
 			var jobBody []byte
 			for {
 				jobID, jobBody, errorReserve = tubeSet.Reserve(reserveTime)
+				//jobID = j.id
+				//jobBody = j.body
 				if errorReserve != nil {
 					//loglocal.Error(fmt.Sprintf("%s Error: %s", tf.name, errorReserve))
 				} else {
@@ -84,5 +96,19 @@ func BuryJob(tf *TubeFactory, workerName string, jobID uint64) {
 		loglocal.Error(err)
 	} else {
 		loglocal.Info(fmt.Sprintf("%s Worker(%s) Start To Do Job(%d) Failed And Buried ⚠ !", tf.name, workerName, jobID))
+	}
+}
+
+// ReserveJob reserve job
+func (tf *TubeFactory) ReserveJob() {
+	for {
+		jobID, jobBody, err := tf.tubeSet.Reserve(reserveTime)
+		if err != nil {
+			//loglocal.Error(fmt.Sprintf("%s Error: %s", tf.name, err))
+		} else {
+			loglocal.Info(fmt.Sprintf("%s Get JobId [%d] JobBody [%s]", tf.name, jobID, string(jobBody)))
+			tf.jobChan <- job{id: jobID, body: jobBody}
+		}
+		//time.Sleep(reserveTime * time.Second)
 	}
 }

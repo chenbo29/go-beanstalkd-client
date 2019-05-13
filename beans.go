@@ -39,7 +39,7 @@ type JobExecuteFunc struct {
 var jobExecuteFuncChannel chan *JobExecuteFunc
 
 const separatorLength = 50
-const workerNum = 2
+const workerNum = 8
 const reserveTime = 5
 
 func init() {
@@ -86,10 +86,9 @@ func Status() {
 
 // Start start to work
 func Start(jef *JobExecuteFunc) {
+	done := make(chan bool)
 	go Monitor(0, jef)
-	for {
-		time.Sleep(1 * time.Second)
-	}
+	<-done
 }
 
 // ListTubeInfo view one tube status
@@ -148,7 +147,7 @@ func ShowStatus(status *map[string]string) {
 // TestPut tube Put Job
 func TestPut(tubeName *string) {
 	tube := beanstalk.Tube{Conn: conn, Name: *tubeName}
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 1000; i++ {
 		info := []byte(*tubeName + " test info " + strconv.Itoa(i))
 		jobID, _ := tube.Put(info, 0, 0, 3*time.Second)
 		fmt.Println(jobID)
