@@ -9,12 +9,12 @@ import (
 )
 
 const name = "beanstalkf"
-const pidPath = "/var/run/"
+const pidPath = "./"
 
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Printf("Usage: %s [start|stop|status]\n", os.Args[0])
-		os.Exit(1)
+		os.Exit(0)
 	}
 	switch os.Args[1] {
 	case "start":
@@ -22,7 +22,7 @@ func main() {
 	case "status":
 		Start()
 	case "stop":
-		pid := GetPid()
+		pid := getPid()
 		pro, err := os.FindProcess(pid)
 		CheckErr(err)
 		CheckErr(pro.Kill())
@@ -34,18 +34,46 @@ func main() {
 
 }
 
-// RecordPid 记录进程PID
-func RecordPid(pro *os.Process) {
+// CheckErr 检查error
+func CheckErr(err error) {
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
+}
+
+// Start 启动
+func Start() {
+	checkRunningProcess()
+	cmdName := getCmdName()
+	os.Args[0] = cmdName
+	process, err := os.StartProcess(cmdName, os.Args, &os.ProcAttr{Files: []*os.File{nil, os.Stdout, os.Stderr}})
+	CheckErr(err)
+	fmt.Println("start success")
+	recordPid(process.Pid)
+
+	//if os.Stdout == nil && os.Stderr == nil{
+	//} else {
+	//	fmt.Println("start error")
+	//	fmt.Println(os.Stdout)
+	//	fmt.Println(os.Stderr)
+	//	time.Sleep(3 * time.Second)
+	//	stopProcessByPid(process.Pid)
+	//}
+}
+
+// recordPid 记录进程PID
+func recordPid(pid int) {
 	var err error
 	f, err := os.OpenFile(pidPath+name+".pid", os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0755)
 	CheckErr(err)
-	_, err = f.WriteString(strconv.Itoa(pro.Pid))
+	_, err = f.WriteString(strconv.Itoa(pid))
 	CheckErr(err)
 	CheckErr(f.Close())
 }
 
-// GetPid 获取进程PID
-func GetPid() int {
+// getPid 获取进程PID
+func getPid() int {
 	p, err := ioutil.ReadFile(pidPath + name + ".pid")
 	if err != nil {
 		return 0
@@ -55,51 +83,31 @@ func GetPid() int {
 	return pid
 }
 
-// CheckErr 检查error
-func CheckErr(err error) {
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+// checkRunningProcess
+func checkRunningProcess() {
+	pid := getPid()
+	if pid != 0 {
+		stopProcessByPid(pid)
 	}
 }
 
-// Start 启动
-func Start() {
-	CheckRunningProcess()
-	exe := os.Getenv("GOEXE")
+// stopProcessByPid stop process by pid
+func stopProcessByPid(pid int) {
+	pro, err := os.FindProcess(pid)
+	if err == nil {
+		err := pro.Kill()
+		CheckErr(err)
+	}
+}
+
+func getCmdName() string {
 	var cmdName string
-	if exe == ".exe" {
+	if os.Getenv("GOEXE") == ".exe" {
 		cmdName = name + os.Getenv("GOEXE")
 	} else {
 		cmdName = name
 	}
 	lp, err := exec.LookPath(cmdName)
 	CheckErr(err)
-	cmdName = lp
-	procAttr := &os.ProcAttr{
-		Files: []*os.File{nil, nil, os.Stderr},
-	}
-
-	args := []string{cmdName}
-	for key, value := range os.Args {
-		if key == 0 {
-			continue
-		} else {
-			args = append(args, value)
-			if value == "start" {
-				args = append(args, "-d=true")
-			}
-		}
-	}
-	process, err := os.StartProcess(cmdName, args, procAttr)
-	CheckErr(err)
-	RecordPid(process)
-}
-
-func CheckRunningProcess() {
-	pid := GetPid()
-	if pid != 0 {
-		pro, _ := os.FindProcess(pid)
-		pro.Kill()
-	}
+	return lp
 }

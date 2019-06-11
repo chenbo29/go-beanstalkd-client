@@ -22,15 +22,15 @@ func init() {
 			path, _ := filepath.Abs(os.Args[0])
 			logPath = filepath.Dir(path)
 		} else {
-			logPath = "/var/log"
+			logPath = "."
 		}
 		logFileName = logPath + fmt.Sprintf("/beanstalkf-%s.log", time.Now().Format("2006-01-02"))
-		fmt.Println(logFileName)
 		logFile, err := os.OpenFile(logFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0766)
 		if err != nil {
 			fmt.Println(err)
 		}
 		logLocal = log.New(logFile, bsdParamsData.Name, log.LstdFlags)
+		logLocal.Println(logFileName)
 	}
 }
 
