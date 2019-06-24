@@ -1,8 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/chenbo29/go-beanstalkd-client"
+	"github.com/chenbo29/gostorage"
+
+	//"github.com/chenbo29/gostorage"
+	_ "github.com/chenbo29/gostorage"
 	"io"
 	"log"
 	"os"
@@ -14,11 +19,17 @@ func main() {
 		Execute: func(id uint64, body []byte) bool {
 			log := NewLog()
 			log.Println("自定义方法-开始执行jobID[ %d ]jobBody[ %s ]", id, string(body))
-			if (id % 2) == 0 {
-				return false
-			} else {
-				return true
+
+			var images []string
+			json.Unmarshal(body, &images)
+			fmt.Println(images)
+			for _, image := range images {
+				//fmt.Println(image)
+				uploader := gostorage.NewAliyun()
+				result, _ := uploader.WebUpload(image)
+				fmt.Println(result)
 			}
+			return true
 		},
 	}
 	beans.Run(&executeFunc)
