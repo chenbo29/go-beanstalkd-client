@@ -147,17 +147,13 @@ func ShowStatus(status *map[string]string) {
 // TestPut tube Put Job
 func TestPut(tubeName *string) {
 	tube := beanstalk.Tube{Conn: conn, Name: *tubeName}
-	//for i := 0; i < 1000; i++ {
-	//	//info := []byte(*tubeName + " test info " + strconv.Itoa(i))
-	//	//images := []string{"https://images2015.cnblogs.com/blog/1021265/201707/1021265-20170706112846847-1487092012.png", "https://images2015.cnblogs.com/blog/1021265/201707/1021265-20170706112846847-1487092012.png"}
-	//
-	//}
+	for i := 0; i < 100; i++ {
+		mm := []string{"https://images2015.cnblogs.com/blog/1021265/201707/1021265-20170706112846847-1487092012.png", "https://images2015.cnblogs.com/blog/1021265/201707/1021265-20170706112846847-1487092012.png"}
+		data, _ := json.Marshal(mm)
+		jobID, _ := tube.Put(data, 0, 0, 3*time.Second)
+		fmt.Println(jobID)
+	}
 
-	mm := []string{"https://images2015.cnblogs.com/blog/1021265/201707/1021265-20170706112846847-1487092012.png", "https://images2015.cnblogs.com/blog/1021265/201707/1021265-20170706112846847-1487092012.png"}
-
-	data, _ := json.Marshal(mm)
-	jobID, _ := tube.Put(data, 0, 0, 3*time.Second)
-	fmt.Println(jobID)
 	ListTubeInfo(&tube)
 }
 
