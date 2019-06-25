@@ -17,17 +17,21 @@ import (
 func main() {
 	executeFunc := beans.JobExecuteFunc{
 		Execute: func(id uint64, body []byte) bool {
-			log := NewLog()
-			log.Println("自定义方法-开始执行jobID[ %d ]jobBody[ %s ]", id, string(body))
-
+			logger := NewLog()
+			logger.Printf("jobID(%d) start to do jobBody(%s)", id, string(body))
 			var images []string
-			json.Unmarshal(body, &images)
-			fmt.Println(images)
+			err := json.Unmarshal(body, &images)
+			if err != nil {
+				logger.Printf("jobID(%d) json decode error %s\n", id, err.Error())
+			}
 			for _, image := range images {
-				//fmt.Println(image)
 				uploader := gostorage.NewAliyun()
-				result, _ := uploader.WebUpload(image)
-				fmt.Println(result)
+				result, err := uploader.WebUpload(image)
+				if err != nil {
+					logger.Printf("jobID(%d) upload error %s\n", id, err.Error())
+				} else {
+					logger.Printf("jobID(%d) upload success %s\n", id, result.URL)
+				}
 			}
 			return true
 		},
@@ -39,5 +43,5 @@ func NewLog() *log.Logger {
 	var w io.Writer
 	logFileName := fmt.Sprintf("./beanstalkf-finish-%s.log", time.Now().Format("2006-01-02"))
 	w, _ = os.OpenFile(logFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0766)
-	return log.New(w, "result", log.LstdFlags)
+	return log.New(w, "go beanstalk client ", log.LstdFlags)
 }
