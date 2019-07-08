@@ -10,11 +10,12 @@ import (
 type ParamsData struct {
 	Name        string
 	Description string
-	Host        string
 	Port        string
+	Host        string
+	Daemon      bool
+	WorkerNum   int
 	Tube        string
 	IsAllStatus bool
-	Daemon      bool
 }
 
 var returnParams ParamsData
@@ -40,6 +41,7 @@ func init() {
 			CommandLine.StringVar(&returnParams.Host, "h", "127.0.0.1", "the host of beanstalkd (shorthand)")
 			CommandLine.BoolVar(&returnParams.Daemon, "daemon", false, "Start With Daemon")
 			CommandLine.BoolVar(&returnParams.Daemon, "d", false, "Start With Daemon (shorthand)")
+			CommandLine.IntVar(&returnParams.WorkerNum, "WorkerNum", 3, "the worker num")
 			CommandLine.Parse(os.Args[2:])
 		case "status":
 			CommandLine.StringVar(&returnParams.Tube, "tube", "default", "the status of tube")

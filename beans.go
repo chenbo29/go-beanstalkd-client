@@ -36,10 +36,7 @@ type JobExecuteFunc struct {
 	Execute func(id uint64, body []byte) bool
 }
 
-var jobExecuteFuncChannel chan *JobExecuteFunc
-
 const separatorLength = 50
-const workerNum = 8
 const reserveTime = 5
 
 func init() {
@@ -161,7 +158,7 @@ func TestPut(tubeName *string) {
 func TubeFactoryStart(tubeName string, executeFunc *JobExecuteFunc) {
 	paramsData := config.GetParams()
 	conn := connect.Conn(paramsData)
-	tf := NewTubeFactory(tubeName, workerNum, conn, executeFunc)
+	tf := NewTubeFactory(tubeName, bsdParamsData.WorkerNum, conn, executeFunc)
 	tf.Run()
 }
 
