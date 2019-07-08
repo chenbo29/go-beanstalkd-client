@@ -6,7 +6,6 @@ import (
 	"github.com/chenbo29/go-beanstalkd-client"
 	"github.com/chenbo29/gostorage"
 
-	//"github.com/chenbo29/gostorage"
 	_ "github.com/chenbo29/gostorage"
 	"io"
 	"log"
