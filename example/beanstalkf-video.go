@@ -5,12 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/chenbo29/go-beanstalkd-client"
-	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
-	"os"
-	"time"
 )
 
 func main() {
@@ -48,9 +44,9 @@ func main() {
 	beans.Run(&executeFunc)
 }
 
-func NewLog() *log.Logger {
-	var w io.Writer
-	logFileName := fmt.Sprintf("./beanstalkf-finish-%s.log", time.Now().Format("2006-01-02"))
-	w, _ = os.OpenFile(logFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0766)
-	return log.New(w, "go beanstalk client ", log.LstdFlags)
-}
+//func NewLog() *log.Logger {
+//	var w io.Writer
+//	logFileName := fmt.Sprintf("./beanstalkf-finish-%s.log", time.Now().Format("2006-01-02"))
+//	w, _ = os.OpenFile(logFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0766)
+//	return log.New(w, "go beanstalk client ", log.LstdFlags)
+//}
