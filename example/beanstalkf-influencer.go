@@ -7,6 +7,7 @@ import (
 	_ "github.com/chenbo29/gostorage"
 	"io"
 	"log"
+	"math/rand"
 	"os"
 	"time"
 )
@@ -26,6 +27,14 @@ func main() {
 				log.Fatal(err)
 			}
 			logger.Printf("follower_num is %d", param.FollowerNum)
+			var start = 12600
+			var end = 105000
+			for i := 0; i < param.FollowerNum; i++ {
+				logger.Printf("num is %d", i)
+				rand.Seed(time.Now().UnixNano())
+				var userId = rand.Intn(end-start) + start
+				logger.Printf("the distribution is %d", userId)
+			}
 			return true
 		},
 	}
