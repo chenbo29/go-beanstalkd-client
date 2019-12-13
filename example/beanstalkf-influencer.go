@@ -47,6 +47,10 @@ func main() {
 				if err != nil {
 					logger.Printf("error is %s", err)
 				}
+				_, err = db.Exec("update user set follower_num = follower_num + 100 where id = ?", param.InfluencerUserId)
+				if err != nil {
+					logger.Printf("user error is %s", err)
+				}
 				userNum++
 			}
 			_, err = db.Exec("update influencer_post_follower set follower_num_actual = follower_num_actual+?, successful_num=successful_num+1 where id = ?", param.FollowerNumActual, param.InfluencerPFId)
@@ -57,10 +61,7 @@ func main() {
 			if err != nil {
 				logger.Printf("influencer_pf_detail error is %s", err)
 			}
-			_, err = db.Exec("update user set follower_num = follower_num + ? where id = ?", param.FollowerNum, param.InfluencerUserId)
-			if err != nil {
-				logger.Printf("user error is %s", err)
-			}
+
 			logger.Printf("the user[%d] actual distribution user num is %d", param.InfluencerUserId, userNum)
 			db.Close()
 			return true
