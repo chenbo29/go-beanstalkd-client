@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"github.com/chenbo29/go-beanstalkd-client"
 	_ "github.com/chenbo29/gostorage"
+	"github.com/go-redis/redis"
+	_ "github.com/go-redis/redis"
 	_ "github.com/go-sql-driver/mysql"
 	"io"
 	"log"
@@ -61,6 +63,19 @@ func main() {
 			if err != nil {
 				logger.Printf("user error is %s", err)
 			}
+
+			rdb := redis.NewClient(&redis.Options{Addr: "127.0.0.1:6379", Password: "", DB: 0})
+			_, err = rdb.Ping().Result()
+			if err != nil {
+				logger.Printf("connect error %s", err)
+			}
+			userIds := rdb.SMembers(fmt.Sprintf("author_r:%d", param.InfluencerUserId))
+			userIdss := userIds.Val()
+			for _, v := range userIdss {
+				logger.Printf("user id is %s", v)
+				rdb.Del(fmt.Sprintf("author:%s:%d", v, param.InfluencerUserId))
+			}
+
 			logger.Printf("the user[%d] actual distribution user num is %d", param.InfluencerUserId, userNum)
 			db.Close()
 			return true
