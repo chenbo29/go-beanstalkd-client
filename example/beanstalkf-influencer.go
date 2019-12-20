@@ -69,12 +69,19 @@ func main() {
 			if err != nil {
 				logger.Printf("connect error %s", err)
 			}
-			userIds := rdb.SMembers(fmt.Sprintf("author_r:%d", param.InfluencerUserId))
+
+			keyR := fmt.Sprintf("author_r:%d", param.InfluencerUserId)
+			userIds := rdb.SMembers(keyR)
+			logger.Printf("redis key is %s", keyR)
+
 			userIdss := userIds.Val()
 			for _, v := range userIdss {
-				logger.Printf("user id is %s", v)
-				rdb.Del(fmt.Sprintf("author:%s:%d", v, param.InfluencerUserId))
+				key := fmt.Sprintf("author:%s:%d", v, param.InfluencerUserId)
+				logger.Printf("redis key is %s", key)
+				rdb.Del(key)
 			}
+
+			rdb.Del(fmt.Sprintf("author_r:%d", param.InfluencerUserId))
 
 			logger.Printf("the user[%d] actual distribution user num is %d", param.InfluencerUserId, userNum)
 			db.Close()
