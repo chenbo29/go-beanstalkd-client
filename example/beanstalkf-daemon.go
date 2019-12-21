@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-const name = "beanstalkf-influencer"
+const name = "beanstalkf-order"
 const pidPath = "./"
 
 func main() {

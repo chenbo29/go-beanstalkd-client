@@ -9,10 +9,8 @@ import (
 	"github.com/go-redis/redis"
 	_ "github.com/go-redis/redis"
 	_ "github.com/go-sql-driver/mysql"
-	"io"
 	"log"
 	"math/rand"
-	"os"
 	"time"
 )
 
@@ -89,11 +87,4 @@ func main() {
 		},
 	}
 	beans.Run(&executeFunc)
-}
-
-func NewLog() *log.Logger {
-	var w io.Writer
-	logFileName := fmt.Sprintf("./beanstalkf-finish-%s.log", time.Now().Format("2006-01-02"))
-	w, _ = os.OpenFile(logFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0766)
-	return log.New(w, "go beanstalk client ", log.LstdFlags)
 }
