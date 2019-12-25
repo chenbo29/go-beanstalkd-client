@@ -26,7 +26,12 @@ func main() {
 				return true
 			}
 			logger.Printf("trade no is %d", param.TradeNo)
-			http.Get(fmt.Sprintf("http://video.gutongkj8.com/c?trade_no=%d", param.TradeNo))
+			url := fmt.Sprintf("http://video.gutongkj8.com/callback/message?trade_no=%d", param.TradeNo)
+			_, err = http.Get(url)
+			if err != nil {
+				logger.Printf("error is %s", err)
+				return true
+			}
 			return true
 		},
 	}
