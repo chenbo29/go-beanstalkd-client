@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/chenbo29/go-beanstalkd-client"
-	_ "github.com/chenbo29/gostorage"
-	_ "github.com/go-redis/redis"
 	_ "github.com/go-sql-driver/mysql"
 	"io"
 	"log"
