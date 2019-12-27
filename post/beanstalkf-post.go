@@ -85,7 +85,7 @@ func main() {
 			return true
 		},
 	}
-	beans.Run(&executeFunc)
+	beans.RunByTubeName(&executeFunc, "post")
 }
 
 func NewLog() *log.Logger {
