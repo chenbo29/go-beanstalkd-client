@@ -176,3 +176,8 @@ func Monitor(originTubeNum int, executeFunc *JobExecuteFunc) {
 		}
 	}
 }
+
+func MonitorByTubeName(tubeNum string, executeFunc *JobExecuteFunc) {
+	loglocal.Info(fmt.Sprintf("Monitor TubeFactory(%s) Start", tubeNum))
+	go TubeFactoryStart(tubeNum, executeFunc)
+}
