@@ -65,6 +65,26 @@ func Run(jef *JobExecuteFunc) {
 	return
 }
 
+func RunByTubeName(jef *JobExecuteFunc, tubeName string) {
+	if len(os.Args) > 1 {
+		switch os.Args[1] {
+		case "status":
+			Status()
+		case "start":
+			StartByTubeName(jef, tubeName)
+		case "testPut":
+			TestPut(&os.Args[2])
+		default:
+			fmt.Fprintf(os.Stderr, "Usage: %s {start|stop|status}\n", os.Args[0])
+			os.Exit(0)
+		}
+	} else {
+		fmt.Fprintf(os.Stderr, "Usage: %s {start|stop|status}\n", os.Args[0])
+		os.Exit(0)
+	}
+	return
+}
+
 // Status view the tube status
 func Status() {
 	if bsdParamsData.IsAllStatus {
@@ -85,6 +105,12 @@ func Status() {
 func Start(jef *JobExecuteFunc) {
 	done := make(chan bool)
 	go Monitor(0, jef)
+	<-done
+}
+
+func StartByTubeName(jef *JobExecuteFunc, tubeName string) {
+	done := make(chan bool)
+	go MonitorByTubeName(tubeName, jef)
 	<-done
 }
 
