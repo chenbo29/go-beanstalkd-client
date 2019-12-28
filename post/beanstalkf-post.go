@@ -34,8 +34,8 @@ func main() {
 			var start = 12600
 			var end = 105000
 			var num = 0
-			db, err := sql.Open("mysql", "linkcar:linkcar!)QP@tcp(47.100.225.249:3306)/linkcar_api")
-			//db, err := sql.Open("mysql", "linkcar:Linux007@tcp(rm-rj94ov6252s8p44dxuo.mysql.rds.aliyuncs.com:3306)/linkcar_main")
+			//db, err := sql.Open("mysql", "linkcar:linkcar!)QP@tcp(47.100.225.249:3306)/linkcar_api")
+			db, err := sql.Open("mysql", "linkcar:Linux007@tcp(rm-rj94ov6252s8p44dxuo.mysql.rds.aliyuncs.com:3306)/linkcar_main")
 			if err != nil {
 				log.Fatal(err)
 			}
