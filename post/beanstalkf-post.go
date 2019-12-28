@@ -77,6 +77,20 @@ func main() {
 					}
 					num++
 				}
+			case "follower":
+				for i := 0; i < param.Num; i++ {
+					rand.Seed(time.Now().UnixNano())
+					var userId = rand.Intn(end-start) + start
+					_, err = db.Exec("insert into user_follow (uid,follower_id) values (?, ?)", param.Id, userId)
+					if err != nil {
+						logger.Printf("error is %s", err)
+					}
+					num++
+				}
+				_, err = db.Exec("update user set follower_num = (select count(*) from user_follow where uid = ?) where id = ?", param.Id, param.Id)
+				if err != nil {
+					logger.Printf("update support_count error is %s", err)
+				}
 			default:
 
 			}
