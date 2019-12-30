@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/chenbo29/go-beanstalkd-client"
 	_ "github.com/chenbo29/gostorage"
+	"github.com/go-redis/redis"
 	_ "github.com/go-redis/redis"
 	_ "github.com/go-sql-driver/mysql"
 	"io"
@@ -91,6 +92,26 @@ func main() {
 				if err != nil {
 					logger.Printf("update support_count error is %s", err)
 				}
+
+				rdb := redis.NewClient(&redis.Options{Addr: "127.0.0.1:6379", Password: "", DB: 0})
+				_, err = rdb.Ping().Result()
+				if err != nil {
+					logger.Printf("connect error %s", err)
+				}
+
+				keyR := fmt.Sprintf("author_r:%d", param.Id)
+				userIds := rdb.SMembers(keyR)
+				logger.Printf("redis key is %s", keyR)
+
+				userIdss := userIds.Val()
+				for _, v := range userIdss {
+					key := fmt.Sprintf("author:%s:%d", v, param.Id)
+					logger.Printf("redis key is %s", key)
+					rdb.Del(key)
+				}
+
+				rdb.Del(fmt.Sprintf("author_r:%d", param.Id))
+
 			default:
 
 			}
