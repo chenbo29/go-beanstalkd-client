@@ -46,13 +46,13 @@ func main() {
 				for i := 0; i < param.Num; i++ {
 					rand.Seed(time.Now().UnixNano())
 					var userId = rand.Intn(end-start) + start
-					_, err = db.Exec("insert into post_support (uid,post_id) values (?, ?)", userId, param.Id)
+					_, err = db.Exec("insert into post_support (uid,post_id, is_robot) values (?, ?, 1)", userId, param.Id)
 					if err != nil {
 						logger.Printf("error is %s", err)
 					}
 					num++
 				}
-				_, err = db.Exec("update post set support_count_robot = (select count(*) from post_support where post_id = ?) where id = ?", param.Id, param.Id)
+				_, err = db.Exec("update post set support_count_robot = (select count(*) from post_support where post_id = ? where is_robot = 1) where id = ?", param.Id, param.Id)
 				if err != nil {
 					logger.Printf("update support_count error is %s", err)
 				}
