@@ -52,7 +52,7 @@ func main() {
 					}
 					num++
 				}
-				_, err = db.Exec("update post set support_count_robot = (select count(*) from post_support where post_id = ? where is_robot = 1) where id = ?", param.Id, param.Id)
+				_, err = db.Exec("update post set support_count_robot = (select count(*) from post_support where post_id = ? and is_robot = 1) where id = ?", param.Id, param.Id)
 				if err != nil {
 					logger.Printf("update support_count error is %s", err)
 				}
