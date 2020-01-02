@@ -72,7 +72,7 @@ func main() {
 				}
 			case "share":
 				for i := 0; i < param.Num; i++ {
-					_, err = db.Exec("update post set repost_count = repost_count + 1 where id = ?", param.Id)
+					_, err = db.Exec("update post set repost_count_robot = repost_count_robot + 1 where id = ?", param.Id)
 					if err != nil {
 						logger.Printf("update support_count error is %s", err)
 					}
