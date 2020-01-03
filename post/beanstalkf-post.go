@@ -22,9 +22,9 @@ func main() {
 			logger := NewLog()
 			logger.Printf("jobID(%d) start to do jobBody(%s)", id, string(body))
 			var param struct {
-				Num  int
+				Num  uint64
 				Type string
-				Id   int
+				Id   uint64
 			}
 			err := json.Unmarshal(body, &param)
 			if err != nil {
@@ -43,7 +43,7 @@ func main() {
 
 			switch param.Type {
 			case "support":
-				for i := 0; i < param.Num; i++ {
+				for i := uint64(0); i < param.Num; i++ {
 					rand.Seed(time.Now().UnixNano())
 					var userId = rand.Intn(end-start) + start
 					_, err = db.Exec("insert into post_support (uid,post_id, is_robot) values (?, ?, 1)", userId, param.Id)
@@ -77,7 +77,7 @@ func main() {
 				rdb.Del(fmt.Sprintf("author_r:%d", param.Id))
 
 			case "comment":
-				for i := 0; i < param.Num; i++ {
+				for i := uint64(0); i < param.Num; i++ {
 					rand.Seed(time.Now().UnixNano())
 					var userId = rand.Intn(end-start) + start
 					_, err = db.Exec("insert into post_comment (uid,post_id,content) values (?, ?, (select content from post_comment_template order by RAND() limit 1))", userId, param.Id)
@@ -91,7 +91,7 @@ func main() {
 					logger.Printf("update support_count error is %s", err)
 				}
 			case "share":
-				for i := 0; i < param.Num; i++ {
+				for i := uint64(0); i < param.Num; i++ {
 					_, err = db.Exec("update post set repost_count_robot = repost_count_robot + 1 where id = ?", param.Id)
 					if err != nil {
 						logger.Printf("update support_count error is %s", err)
@@ -99,7 +99,7 @@ func main() {
 					num++
 				}
 			case "follower":
-				for i := 0; i < param.Num; i++ {
+				for i := uint64(0); i < param.Num; i++ {
 					rand.Seed(time.Now().UnixNano())
 					var userId = rand.Intn(end-start) + start
 					_, err = db.Exec("insert into user_follow (uid,follower_id) values (?, ?)", param.Id, userId)
