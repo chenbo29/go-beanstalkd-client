@@ -21,6 +21,7 @@ func main() {
 		Execute: func(id uint64, body []byte) bool {
 			logger := NewLog()
 			logger.Printf("jobID(%d) start to do jobBody(%s)", id, string(body))
+			return true
 			var param struct {
 				Num  uint64
 				Type string
