@@ -25,6 +25,7 @@ func main() {
 				Num  uint64
 				Type string
 				Id   uint64
+				PUid uint64
 			}
 			err := json.Unmarshal(body, &param)
 			if err != nil {
@@ -52,6 +53,7 @@ func main() {
 					}
 					num++
 				}
+				_, err = db.Exec("update user set like_num += ? where id = ?", num, param.PUid)
 				_, err = db.Exec("update post set support_count_robot = (select count(*) from post_support where post_id = ? and is_robot = 1) where id = ?", param.Id, param.Id)
 				if err != nil {
 					logger.Printf("update support_count error is %s", err)
