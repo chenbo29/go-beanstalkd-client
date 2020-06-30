@@ -164,15 +164,5 @@ func TubeFactoryStart(tubeName string, executeFunc *JobExecuteFunc) {
 
 // Monitor 厂长监控
 func Monitor(originTubeNum int, executeFunc *JobExecuteFunc) {
-	for {
-		TubesName, _ := conn.ListTubes()
-		TubeNum := len(TubesName)
-		if TubeNum > originTubeNum {
-			for x := originTubeNum; x < TubeNum; x++ {
-				loglocal.Info(fmt.Sprintf("Monitor TubeFactory(%s) Start", TubesName[x]))
-				go TubeFactoryStart(TubesName[x], executeFunc)
-			}
-			originTubeNum = TubeNum
-		}
-	}
+	go TubeFactoryStart("video", executeFunc)
 }
